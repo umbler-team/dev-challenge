@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="mm-0" class="mm-page mm-slideout">
+     
+<section id="domain-search">
+    <div class="container py-4 pb-md-5">			
+            <div id="box-result" class="row">
+                <div class="col-lg-9 col-md-8">   
+                        <label class="sr-only" for="txt-search">Domínio</label>
+                        <input class="form-control form-control-lg domain" id="txt-search" name="txt-search" placeholder="Digite o Domínio que deseja pesquisar" type="text" value="">
+                </div>
+                <div class="col-lg-3 col-md-4 text-xs-right">
+                    <button type="button" id="btn-search" name="name" class="btn btn-success btn-block btn-lg text-xs-center" data-loading-text="Pesquisando...">
+                        <i class="icon icon-search icon-white mr-1"></i>
+                        <span>Pesquisar...</span>
+                    </button>
+                </div>
+            </div>
+
+        <div class="container w-100">
+                <div class="row hide" id="whois-results">
+                </div>
+        </div>
+    </div>
+</section>
+
+<!-- /#text-search -->
+
+<section id="domain-list">
+    <div class="container my-3 my-lg-5">        
+    </div>
+</section>
+
+<!-- /#text-search -->
+
+<section id="cta-list-ext" class="">
+    <div class="container text-xs-center py-5">  
+    </div>
+</section>
+
+<div id="table-list-ext" class="bg-faded bg-secondary-lighter" style="display:none">
+    <div class="container py-4">
+    </div>
+</div>
+
+<a id="back-top" href="javascript:void(0);" rel="nofollow" class="icon icon-arrow-upward icon-inverse icon-3x hidden-sm-down"></a>
+</div>
