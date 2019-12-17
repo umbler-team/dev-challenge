@@ -54,6 +54,7 @@ Se você rodar o projeto e testar um domínio, verá que ele já está funcionan
 
 # BackEnd
 
+ - O projeto está rodando em .Net Core 2.0.3, porém é necessário fazer o upgrade para o .Net Core 3.1.0.
  - Não há validação no backend permitindo que um requisição inválida prossiga, o que ocasiona exceptions (erro 500).
  - A complexidade ciclomática do controller está muito alta, o ideal seria utilizar uma arquitetura em camadas.
  - O DomainController está retornando a própria entidade de domínio por JSON, o que faz com que propriedades como Id, Ttl e UpdatedAt sejam mandadas para o cliente web desnecessariamente. Retornar uma ViewModel neste caso seria mais aconselhado.
