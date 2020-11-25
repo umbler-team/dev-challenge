@@ -1,4 +1,6 @@
-﻿body {
+﻿@charset "utf-8";
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -19,6 +21,15 @@
 .carousel-caption p {
     font-size: 20px;
     line-height: 1.4;
+}
+
+.d-none {
+    display: none!important;
+}
+
+#whois-show {
+    height: 6em;
+    overflow-y: auto;
 }
 
 /* Make .svg files in the carousel display properly in older browsers */

@@ -12,21 +12,26 @@
         </div> 
     </section>
 <section id="domain-search">
-    <div class="container py-4 pb-md-5">
+    <div class="container py-2 pb-md-2">
         <div id="box-result" class="row">
-            <div class="col-lg-9 col-md-8">
-                <label class="sr-only" for="txt-search">Domínio</label>
-                <input class="form-control form-control-lg domain" id="txt-search" name="txt-search" placeholder="Digite o Domínio que deseja pesquisar" type="text" value="">
+            <div class="col-lg-9 col-md-8 form-group" id="input-group-search">
+                <div class="input-group">
+                    <label class="sr-only" for="txt-search">Domínio</label>
+                    <span class="input-group-addon" id="sizing-addon2">www.</span>
+                    <input type="text" class="form-control form-control-lg domain" id="txt-search" name="txt-search" aria-label="Digite o Domínio que deseja pesquisar" placeholder="Digite o Domínio que deseja pesquisar">
+                </div>
+                <div class="form-control-feedback d-none" id="validate-field"></div>
             </div>
-            <div class="col-lg-3 col-md-4 text-xs-right">
+           
+            <div class="col-lg-3 col-md-4 py-1 py-md-0 text-xs-right">
                 <button type="button" id="btn-search" name="name" class="btn btn-success btn-block btn-lg text-xs-center" data-loading-text="Pesquisando...">
                     <i class="icon icon-search icon-white mr-1"></i>
                     <span>Pesquisar...</span>
                 </button>
             </div>
         </div>
-        <progress id="progress-request" class="progress progress-xl invisible mb-3 mt-3" value="25" max="100"></progress>
-        <div class="container w-100 invisible" id="whois-results">
+        <progress id="progress-request" class="progress progress-xl d-none mb-3 mt-3" value="25" max="100"></progress>
+        <div class="container w-100 d-none pt-md-3" id="whois-results">
             <div class="row hide">
                 <div class="form-group row">
                     <label for="name-show" class="col-xs-2 col-form-label">Domínio</label>
@@ -69,11 +74,11 @@
         </div>
         <div class="list-group">
             @foreach (var domain in Model)
-        {
-            <a href="#" class="list-group-item list-group-item-action">
+            {
+            <a href="javascript:void(0)" class="list-group-item list-group-item-action domain-searched-btn" data-domain="@domain.Name">
                 @domain.Name
             </a>
-    }
+            }
         </div>
     </div>
 </section>

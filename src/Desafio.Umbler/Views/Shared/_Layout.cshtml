@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DesafioUmbler</title>
 
@@ -20,10 +20,10 @@
 <body>
     <nav id="menu" class="bg-primary Fixed navbar navbar-default navbar-fixed-top navbar-toggleable-xl " role="navigation">
         <div class="navbar-header">
-            <a id="toogle-menu-mobile" href="#menu-mobile" class="d-block float-xs-right hidden-xl-up"><span class="icon icon-nav-drawer icon-4x"></span></a>  
+            <a id="toogle-menu-mobile" href="#menu-mobile" class="d-block float-xs-right hidden-xl-up"><span class="icon icon-nav-drawer icon-4x"></span></a>
             <a class="navbar-brand float-xs-left" href="/"><div class="logo-umbler-negativo"></div></a>
         </div>
-        <!-- <div class="collapse navbar-collapse pos-relative float-xs-right" id="navbarSupportedContent">		
+        <!-- <div class="collapse navbar-collapse pos-relative float-xs-right" id="navbarSupportedContent">
         </div> -->
     </nav>
 
@@ -40,15 +40,19 @@
                                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#img-umbler-favicon"></use>
                                 </svg>
                             </a>
-                            <b class="mr-3 hidden-lg-down">Umbler, Inc. © 2017</b>                                            
+                            <b class="mr-3 hidden-lg-down">Umbler, Inc. © 2017</b>
                         </div>
                     </div>
                 </div>
             </div>
         </footer>
     </div>
-    
-    <script src="~/js/site.js" asp-append-version="true"></script>   
+
+    <script src="https://cdn.jsdelivr.net/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.8/js/tether.min.js"></script>
+    <script src="//static.umbler.com/umbootstrap/assets/dist/js/bootstrap.min.js"></script>
+    <script src="//static.umbler.com/umbootstrap/themes/umbler-app/dist/js/theme.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true" type="text/javascript" charset="UTF-8"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

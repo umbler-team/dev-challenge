@@ -1,4 +1,4 @@
-const Request = window.Request
+﻿const Request = window.Request
 const Headers = window.Headers
 const fetch = window.fetch
 
@@ -53,11 +53,81 @@ class DOMManager {
     }
 
     static setInvisible(domItem) {
-        domItem.classList.add('invisible');
+        domItem.classList.add('d-none');
     }
 
     static setVisible(domItem) {
-        domItem.classList.remove('invisible');
+        domItem.classList.remove('d-none');
+    }
+
+    static setText(domItem, text) {
+        domItem.innerText = text;
+        return domItem;
+    }
+
+    static setWarning(domItem, className){
+       domItem.classList.add('has-warning');
+    }
+
+    static removeWarning(domItem, className) {
+        domItem.classList.remove('has-warning');
+    }
+
+    static removeDnsList() {
+        $('#dns-form').children().remove();  
+    }
+}
+
+class App {
+    constructor() {
+        this.validDomainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.(([a-zA-Z]{2,})|([a-zA-Z]{2,}\.[a-zA-Z]{2,2}))$/;
+        this.DOMValidateField = document.getElementById('validate-field');
+        this.DOMInputSearchGroup = document.getElementById('input-group-search');
+        this.DOMDomain = document.getElementById('txt-search');
+        this.whoisResultDOM = document.getElementById('whois-results');
+        this.messages = {
+            invalidDomain : "Domínio inválido, digite um domínio existente..."
+        }
+    }
+
+    async startSearch(domainName) {
+        this.resetApp();
+
+        progressBar.startLoad(this.whoisResultDOM);
+
+        var domain = domainName == null ? await Domain.search(this.DOMDomain.value) : await Domain.search(domainName);
+
+        progressBar.upProgressBar();
+
+        DOMManager.fillDataDomain(domain);
+
+        this.finishSearch(this.whoisResultDOM);
+
+        return await Domain.search(domainName);
+    }
+
+    finishSearch(resultDOM) {
+        progressBar.stopLoad();
+        DOMManager.setVisible(resultDOM);
+    }
+
+    resetApp() {
+        DOMManager.removeWarning(this.DOMInputSearchGroup);
+        DOMManager.setInvisible(this.DOMValidateField);
+        DOMManager.setInvisible(this.whoisResultDOM);
+        DOMManager.removeDnsList();
+    }
+
+    formIsValid() {
+        if (!this.DOMDomain.value.match(this.validDomainRegex)) {
+            DOMManager.setText(this.DOMValidateField, this.messages.invalidDomain);
+            DOMManager.setVisible(this.DOMValidateField);
+            DOMManager.setWarning(this.DOMInputSearchGroup);
+
+            return false;
+        }
+
+        return true;
     }
 }
 
@@ -76,13 +146,9 @@ class Domain {
         }
     }
 
-    static async startSearch(domainName) {
+    static async search(domainName) {
         return await Domain.init(domainName);
-    }
 
-    finishSearch(resultDOM) {
-        progressBar.stopLoad();
-        DOMManager.setVisible(resultDOM);
     }
 
     static init(domainName) {
@@ -134,29 +200,30 @@ class Api {
 const api = new Api();
 const progressBar = new ProgressBar();
 
+
 var callback = () => {
-  const btn = document.getElementById('btn-search')
-  const domainName = document.getElementById('txt-search')
-  const whoisResultDOM = document.getElementById('whois-results');
+    const btnNewSearch = document.getElementById('btn-search');
+    const btnSearched = $('.domain-searched-btn');
+    const app = new App();
 
-  if (btn) {
-      btn.onclick = async () => {
-          DOMManager.setInvisible(whoisResultDOM);
-          progressBar.startLoad(whoisResultDOM);
+    if (btnNewSearch) {
+      btnNewSearch.onclick = async () => {
+          if (!app.formIsValid()) return;
 
-          var domain = await Domain.startSearch(domainName.value)
+          app.startSearch();       
+        }
 
-          progressBar.upProgressBar();
-
-          DOMManager.fillDataDomain(domain);
-
-          domain.finishSearch(whoisResultDOM);
-    }
+      if ($(btnSearched)) {
+          $(btnSearched).on('click', (event) => {
+              app.startSearch($(event.target).attr('data-domain'));
+          })    
+      }
   }
 }
 
 if (document.readyState === 'complete' || (document.readyState !== 'loading' && !document.documentElement.doScroll)) {
-  callback()
+    callback()
+    
 } else {
   document.addEventListener('DOMContentLoaded', callback)
 }
