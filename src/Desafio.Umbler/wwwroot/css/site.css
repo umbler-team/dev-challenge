@@ -29,7 +29,7 @@ body {
 
 #whois-show {
     height: 6em;
-    overflow-y: auto;
+    overflow-y: auto;   
 }
 
 /* Make .svg files in the carousel display properly in older browsers */

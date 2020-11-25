@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Desafio.Umbler
 {
@@ -23,17 +24,18 @@ namespace Desafio.Umbler
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages();
             // Add framework services.
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddMvc();
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.ApplicationName == Environments.Development)
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -44,12 +46,16 @@ namespace Desafio.Umbler
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                     name :"default",
+                    pattern : "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
+
         }
     }
 }

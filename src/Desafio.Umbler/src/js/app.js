@@ -200,7 +200,6 @@ class Api {
 const api = new Api();
 const progressBar = new ProgressBar();
 
-
 var callback = () => {
     const btnNewSearch = document.getElementById('btn-search');
     const btnSearched = $('.domain-searched-btn');
