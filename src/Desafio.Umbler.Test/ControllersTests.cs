@@ -22,7 +22,7 @@ namespace Desafio.Umbler.Test
 
             //act
             var response = controller.Index();
-            var result = response as ViewResult;
+            var result = response as Task<IActionResult>;
 
             //assert
             Assert.IsNotNull(result);
@@ -107,7 +107,7 @@ namespace Desafio.Umbler.Test
             var domainName = "test.com";
 
             var dnsResponse = new Mock<IDnsQueryResponse>();
-            lookupClient.Setup(l => l.QueryAsync(domainName, QueryType.ANY)).Returns(Task.FromResult(dnsResponse.Object));
+            //lookupClient.Setup(async l =>  await l.QueryAsync(domainName, QueryType.ANY)).Returns(Task.FromResult(dnsResponse.Object));
 
             //arrange 
             var options = new DbContextOptionsBuilder<DatabaseContext>()

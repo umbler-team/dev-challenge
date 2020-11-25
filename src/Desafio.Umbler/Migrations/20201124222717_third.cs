@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Desafio.Umbler.Migrations
 {
-    public partial class initial : Migration
+    public partial class third : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,3 +36,4 @@ namespace Desafio.Umbler.Migrations
         }
     }
 }
+

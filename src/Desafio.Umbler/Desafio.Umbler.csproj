@@ -3,10 +3,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DnsClient" Version="1.0.7" />
+    <PackageReference Include="DnsClient" Version="1.4.0-beta-20200912.4" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
-    <PackageReference Include="WhoisClient.NET" Version="3.0.0" />
+    <PackageReference Include="WhoisClient.NET" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />

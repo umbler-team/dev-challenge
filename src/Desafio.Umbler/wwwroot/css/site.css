@@ -8,6 +8,11 @@
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+    padding-top:50px;
+}
+
+.logo-umbler-negativo {
+    background-position: 0 0;
 }
 
 /* Carousel */
@@ -26,6 +31,9 @@
     margin: 15px;
 }
 
+.navbar-fixed-top{
+    top: 0!important;
+}
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */

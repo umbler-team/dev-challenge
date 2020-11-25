@@ -1,27 +1,61 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+   
 }
 
+@model List<Desafio.Umbler.Models.Domain>;
+
 <div id="mm-0" class="mm-page mm-slideout">
-     
+    <section id="title-page">
+        <div class="container py-4 pb-md-2 text-center">
+            <h1>Pesquise o seu domínio...</h1>
+        </div> 
+    </section>
 <section id="domain-search">
-    <div class="container py-4 pb-md-5">			
-            <div id="box-result" class="row">
-                <div class="col-lg-9 col-md-8">   
-                        <label class="sr-only" for="txt-search">Domínio</label>
-                        <input class="form-control form-control-lg domain" id="txt-search" name="txt-search" placeholder="Digite o Domínio que deseja pesquisar" type="text" value="">
+    <div class="container py-4 pb-md-5">
+        <div id="box-result" class="row">
+            <div class="col-lg-9 col-md-8">
+                <label class="sr-only" for="txt-search">Domínio</label>
+                <input class="form-control form-control-lg domain" id="txt-search" name="txt-search" placeholder="Digite o Domínio que deseja pesquisar" type="text" value="">
+            </div>
+            <div class="col-lg-3 col-md-4 text-xs-right">
+                <button type="button" id="btn-search" name="name" class="btn btn-success btn-block btn-lg text-xs-center" data-loading-text="Pesquisando...">
+                    <i class="icon icon-search icon-white mr-1"></i>
+                    <span>Pesquisar...</span>
+                </button>
+            </div>
+        </div>
+        <progress id="progress-request" class="progress progress-xl invisible mb-3 mt-3" value="25" max="100"></progress>
+        <div class="container w-100 invisible" id="whois-results">
+            <div class="row hide">
+                <div class="form-group row">
+                    <label for="name-show" class="col-xs-2 col-form-label">Domínio</label>
+                    <div class="col-xs-10">
+                        <p class="form-control" id="name-show"></p>
+                    </div>
                 </div>
-                <div class="col-lg-3 col-md-4 text-xs-right">
-                    <button type="button" id="btn-search" name="name" class="btn btn-success btn-block btn-lg text-xs-center" data-loading-text="Pesquisando...">
-                        <i class="icon icon-search icon-white mr-1"></i>
-                        <span>Pesquisar...</span>
-                    </button>
+                <div class="form-group row" id="dns-form">
+                    
+                </div>
+                <div class="form-group row">
+                    <label for="ip-show" class="col-xs-2 col-form-label">IP</label>
+                    <div class="col-xs-10">
+                        <p class="form-control" id="ip-show"></p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="host-show" class="col-xs-2 col-form-label">Host</label>
+                    <div class="col-xs-10">
+                        <p class="form-control" id="host-show"></p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="whois-show" class="col-xs-2 col-form-label">Whois</label>
+                    <div class="col-xs-10">
+                        <p class="form-control" id="whois-show"></p>
+                    </div>
                 </div>
             </div>
-
-        <div class="container w-100">
-                <div class="row hide" id="whois-results">
-                </div>
         </div>
     </div>
 </section>
@@ -29,7 +63,18 @@
 <!-- /#text-search -->
 
 <section id="domain-list">
-    <div class="container my-3 my-lg-5">        
+    <div class="container my-3 my-lg-5">
+        <div class="title">
+            <p class="h1">Já pesquisados</p>
+        </div>
+        <div class="list-group">
+            @foreach (var domain in Model)
+        {
+            <a href="#" class="list-group-item list-group-item-action">
+                @domain.Name
+            </a>
+    }
+        </div>
     </div>
 </section>
 

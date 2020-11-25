@@ -29,22 +29,14 @@ namespace Desafio.Umbler.Controllers
                 var response = await WhoisClient.QueryAsync(domainName);
 
                 var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
+                var result = await lookup.QueryAsync(domainName, QueryType.A);
+                var resultNS = await lookup.QueryAsync(domainName, QueryType.NS);
 
-                var hostResponse = await WhoisClient.QueryAsync(ip);
+                domain = new Domain(domainName, result, resultNS, response.Raw);
 
-                domain = new Domain
-                {
-                    Name = domainName,
-                    Ip = ip,
-                    UpdatedAt = DateTime.Now,
-                    WhoIs = response.Raw,
-                    Ttl = record?.TimeToLive ?? 0,
-                    HostedAt = hostResponse.OrganizationName
-                };
+                var hostResponse = await WhoisClient.QueryAsync(domain.Ip);
+
+                domain.HostedAt = hostResponse.OrganizationName;
 
                 _db.Domains.Add(domain);
             }
@@ -71,7 +63,7 @@ namespace Desafio.Umbler.Controllers
 
             await _db.SaveChangesAsync();
 
-            return Ok(domain);
+            return Ok( new { Name = domain.Name, Ip = domain.Ip, HostedAt = domain.HostedAt, WhoIs = domain.WhoIs, NsRecords = domain.GetNsList()});
         }
     }
 }

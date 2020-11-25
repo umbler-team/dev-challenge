@@ -2,6 +2,97 @@ const Request = window.Request
 const Headers = window.Headers
 const fetch = window.fetch
 
+class ProgressBar {
+    constructor() {
+        this.totalSteps = 2;
+        this.maximumPercentage = 100;
+        this.progressBarStep = 100 / this.totalSteps;
+        this.progressBarPercentage = 100 / this.totalSteps;
+        this.progressBarDOM = document.getElementById('progress-request');
+    }
+
+    upProgressBar() {
+        this.progressBarPercentage += this.progressBarStep;
+
+        this.progressBarDOM.value = this.progressBarPercentage;
+    }
+
+    startLoad() {
+        DOMManager.setVisible(this.progressBarDOM);
+
+    }
+
+    stopLoad() {
+        DOMManager.setInvisible(this.progressBarDOM);
+
+    }
+}
+
+class DOMManager {
+    static fillDataDomain(domain) {
+        const nameShow = document.getElementById("name-show");
+        const ipShow = document.getElementById("ip-show");
+        const hostShow = document.getElementById("host-show");
+        const whoisShow = document.getElementById("whois-show");
+        const nsRecordsShow = document.getElementById("dns-form");
+
+        domain.nsRecords.forEach((nr, i) => {
+            var template = `<label for="dns-show" class="col-xs-2 col-form-label">DNS ${i + 1}</label>
+                            <div class="col-xs-10">
+                            <p class="form-control" id="dns-show">${nr}</p>
+                            </div>`
+            nsRecordsShow.innerHTML += template;
+        })
+
+        nameShow.innerText = domain.name;
+        ipShow.innerText = domain.ip;
+        hostShow.innerText = domain.host;
+        whoisShow.innerText = domain.whois;
+
+        progressBar.upProgressBar();
+    }
+
+    static setInvisible(domItem) {
+        domItem.classList.add('invisible');
+    }
+
+    static setVisible(domItem) {
+        domItem.classList.remove('invisible');
+    }
+}
+
+class Domain {
+    constructor(response) {
+        if (typeof response === 'undefined') {
+            throw new Error('Cannot be called directly');
+        }
+
+        if (response) {
+            this.name = response.name;
+            this.ip = response.ip;
+            this.host = response.hostedAt;
+            this.whois = response.whoIs;
+            this.nsRecords = response.nsRecords;
+        }
+    }
+
+    static async startSearch(domainName) {
+        return await Domain.init(domainName);
+    }
+
+    finishSearch(resultDOM) {
+        progressBar.stopLoad();
+        DOMManager.setVisible(resultDOM);
+    }
+
+    static init(domainName) {
+        return api.getDomain(domainName)
+            .then(function (response) {
+                return new Domain(response);
+            })
+    }
+}
+
 class Api {
   async request (method, url, body) {
     if (body) {
@@ -12,6 +103,9 @@ class Api {
       method: method,
       body: body,
       credentials: 'same-origin',
+      onUploadProgress: (p) => {
+          console.log(p)
+      },
       headers: new Headers({
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -37,19 +131,26 @@ class Api {
   }
 }
 
-const api = new Api()
+const api = new Api();
+const progressBar = new ProgressBar();
 
 var callback = () => {
   const btn = document.getElementById('btn-search')
-  const txt = document.getElementById('txt-search')
-  const result = document.getElementById('whois-results')
+  const domainName = document.getElementById('txt-search')
+  const whoisResultDOM = document.getElementById('whois-results');
 
   if (btn) {
-    btn.onclick = async () => {
-      const response = await api.getDomain(txt.value)
-      if (response) {
-        result.innerHTML = JSON.stringify(response, null, 4)
-      }
+      btn.onclick = async () => {
+          DOMManager.setInvisible(whoisResultDOM);
+          progressBar.startLoad(whoisResultDOM);
+
+          var domain = await Domain.startSearch(domainName.value)
+
+          progressBar.upProgressBar();
+
+          DOMManager.fillDataDomain(domain);
+
+          domain.finishSearch(whoisResultDOM);
     }
   }
 }
