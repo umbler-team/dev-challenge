@@ -41,7 +41,7 @@ namespace Desafio.Umbler
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
             }
 
             app.UseStaticFiles();

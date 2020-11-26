@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DnsClient;
 using DnsClient.Protocol;
@@ -67,6 +68,13 @@ namespace Desafio.Umbler.Models
             });
 
             return nsRecordUmounted;
+        }
+
+        public static bool isValid(string domain)
+        {
+            var regex = new Regex(@"^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.(([a-zA-Z]{2,})|([a-zA-Z]{2,}\.[a-zA-Z]{2,2}))$");
+
+            return regex.Match(domain).Success;
         }
     }
 

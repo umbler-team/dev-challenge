@@ -8,126 +8,164 @@ class ProgressBar {
         this.maximumPercentage = 100;
         this.progressBarStep = 100 / this.totalSteps;
         this.progressBarPercentage = 100 / this.totalSteps;
-        this.progressBarDOM = document.getElementById('progress-request');
     }
 
     upProgressBar() {
         this.progressBarPercentage += this.progressBarStep;
 
-        this.progressBarDOM.value = this.progressBarPercentage;
+        domManager.setProgressBarValue(this.progressBarPercentage);
     }
 
     startLoad() {
-        DOMManager.setVisible(this.progressBarDOM);
-
+        domManager.showProgressBar();
     }
 
     stopLoad() {
-        DOMManager.setInvisible(this.progressBarDOM);
-
+        domManager.hideProgressBar();
     }
 }
 
 class DOMManager {
-    static fillDataDomain(domain) {
-        const nameShow = document.getElementById("name-show");
-        const ipShow = document.getElementById("ip-show");
-        const hostShow = document.getElementById("host-show");
-        const whoisShow = document.getElementById("whois-show");
-        const nsRecordsShow = document.getElementById("dns-form");
+    constructor() {
+        this.DOMValidateField = document.getElementById('validate-field');
+        this.DOMInputSearchGroup = document.getElementById('input-group-search');
+        this.DOMDomain = document.getElementById('txt-search');
+        this.whoisResultDOM = document.getElementById('whois-results');
+        this.progressBarDOM = document.getElementById('progress-request');
+        this.nameShow = document.getElementById("name-show");
+        this.ipShow = document.getElementById("ip-show");
+        this.hostShow = document.getElementById("host-show");
+        this.whoisShow = document.getElementById("whois-show");
+        this.nsRecordsShow = document.getElementById("dns-form");
+    }
 
+    resetDOM() {
+        this.removeWarning(this.DOMInputSearchGroup);
+        this.setInvisible(this.DOMValidateField);
+        this.setInvisible(this.whoisResultDOM);
+        this.removeDnsList();
+        this.hideProgressBar();
+    }
+
+    showProgressBar() {
+        this.setVisible(this.progressBarDOM);
+    }
+
+    hideProgressBar() {
+        this.setInvisible(this.progressBarDOM);
+    }
+
+    getProgressBarValue() {
+        return this.progressBarDOM.value;
+    }
+
+    setProgressBarValue(value) {
+        this.progressBarDOM.value = value;
+    }
+
+    getDomainInputValue() {
+        return this.DOMDomain.value;
+    }
+
+    throwWarning(message) {
+        this.setText(this.DOMValidateField, message);
+        this.setVisible(this.DOMValidateField);
+        this.setWarning(this.DOMInputSearchGroup);
+    }
+
+    showResult() {
+        this.setVisible(this.whoisResultDOM);
+    }
+
+    fillDataDomain(domain) {
         domain.nsRecords.forEach((nr, i) => {
             var template = `<label for="dns-show" class="col-xs-2 col-form-label">DNS ${i + 1}</label>
                             <div class="col-xs-10">
                             <p class="form-control" id="dns-show">${nr}</p>
                             </div>`
-            nsRecordsShow.innerHTML += template;
+            this.nsRecordsShow.innerHTML += template;
         })
 
-        nameShow.innerText = domain.name;
-        ipShow.innerText = domain.ip;
-        hostShow.innerText = domain.host;
-        whoisShow.innerText = domain.whois;
+        this.nameShow.innerText = domain.name;
+        this.ipShow.innerText = domain.ip;
+        this.hostShow.innerText = domain.host;
+        this.whoisShow.innerText = domain.whois;
 
         progressBar.upProgressBar();
     }
 
-    static setInvisible(domItem) {
+    setInvisible(domItem) {
         domItem.classList.add('d-none');
     }
 
-    static setVisible(domItem) {
+    setVisible(domItem) {
         domItem.classList.remove('d-none');
     }
 
-    static setText(domItem, text) {
+    setText(domItem, text) {
         domItem.innerText = text;
         return domItem;
     }
 
-    static setWarning(domItem, className){
+    setWarning(domItem){
        domItem.classList.add('has-warning');
     }
 
-    static removeWarning(domItem, className) {
+    removeWarning(domItem) {
         domItem.classList.remove('has-warning');
     }
 
-    static removeDnsList() {
+    removeDnsList() {
         $('#dns-form').children().remove();  
     }
 }
 
 class App {
     constructor() {
-        this.validDomainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.(([a-zA-Z]{2,})|([a-zA-Z]{2,}\.[a-zA-Z]{2,2}))$/;
-        this.DOMValidateField = document.getElementById('validate-field');
-        this.DOMInputSearchGroup = document.getElementById('input-group-search');
-        this.DOMDomain = document.getElementById('txt-search');
-        this.whoisResultDOM = document.getElementById('whois-results');
         this.messages = {
-            invalidDomain : "Domínio inválido, digite um domínio existente..."
+            invalidDomain : "Domínio inválido, digite um domínio existente...",
+            errorServer: "Ocorreu algum erro ou o domínio não está registrado..."
         }
     }
 
     async startSearch(domainName) {
         this.resetApp();
 
-        progressBar.startLoad(this.whoisResultDOM);
+        progressBar.startLoad();
 
-        var domain = domainName == null ? await Domain.search(this.DOMDomain.value) : await Domain.search(domainName);
+        var domain = domainName == null ? await Domain.search(domManager.getDomainInputValue()) : await Domain.search(domainName);
+
+        console.log(domain)
+
+        if (!domain.success) return;
 
         progressBar.upProgressBar();
 
-        DOMManager.fillDataDomain(domain);
+        domManager.fillDataDomain(domain);
 
-        this.finishSearch(this.whoisResultDOM);
+        this.doneSearch();
 
-        return await Domain.search(domainName);
+        return domain;
     }
 
-    finishSearch(resultDOM) {
+    doneSearch(resultDOM) {
         progressBar.stopLoad();
-        DOMManager.setVisible(resultDOM);
+        domManager.showResult();
     }
 
     resetApp() {
-        DOMManager.removeWarning(this.DOMInputSearchGroup);
-        DOMManager.setInvisible(this.DOMValidateField);
-        DOMManager.setInvisible(this.whoisResultDOM);
-        DOMManager.removeDnsList();
+        domManager.resetDOM();
     }
 
     formIsValid() {
-        if (!this.DOMDomain.value.match(this.validDomainRegex)) {
-            DOMManager.setText(this.DOMValidateField, this.messages.invalidDomain);
-            DOMManager.setVisible(this.DOMValidateField);
-            DOMManager.setWarning(this.DOMInputSearchGroup);
+        var isValid = Domain.isValid(domManager.getDomainInputValue());
 
-            return false;
+        if (!isValid) {
+            domManager.throwWarning(this.messages.invalidDomain);
+   
         }
 
-        return true;
+        return isValid;
     }
 }
 
@@ -137,13 +175,25 @@ class Domain {
             throw new Error('Cannot be called directly');
         }
 
-        if (response) {
-            this.name = response.name;
-            this.ip = response.ip;
-            this.host = response.hostedAt;
-            this.whois = response.whoIs;
-            this.nsRecords = response.nsRecords;
+        if (response && typeof response.request !== 'undefined') {
+            this.name = response.request.name;
+            this.ip = response.request.ip;
+            this.host = response.request.hostedAt;
+            this.whois = response.request.whoIs;
+            this.nsRecords = response.request.nsRecords;
+            this.success = response.success;
         }
+
+        if (response && response.request === 'undefined') {
+            
+            this.success = response.success;
+        }
+    }
+
+    static isValid(domainName) {
+        const validDomainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.(([a-zA-Z]{2,})|([a-zA-Z]{2,}\.[a-zA-Z]{2,2}))$/;
+
+        return domainName.match(validDomainRegex);
     }
 
     static async search(domainName) {
@@ -178,32 +228,51 @@ class Api {
       })
     })
 
-    const resp = await fetch(request)
-    if (!resp.ok && resp.status !== 400) {
-      throw Error(resp.statusText)
+      const resp = await fetch(request);
+
+      if (!resp.ok) {
+          throw new this.DomainSearchExpection(resp.status);
+       }
+
+       const jsonResult = await resp.json()
+
+       return jsonResult
     }
 
-    const jsonResult = await resp.json()
-
-    if (resp.status === 400) {
-      jsonResult.requestStatus = 400
+    DomainSearchExpection(status) {
+        this.status = status;
+        this.messages = app.messages;
     }
 
-    return jsonResult
-  }
+    async getDomain(domainOrIp) {
+        try {
+            var result = await this.request('GET', `domain/${domainOrIp}`);
 
-  async getDomain (domainOrIp) {
-    return this.request('GET', `domain/${domainOrIp}`)
+            return { request: result, success: true } 
+        } catch (e) {
+            if (e.status === 400) {
+                app.resetApp();
+                domManager.throwWarning(e.messages.invalidDomain);
+                return {success : false};
+            }
+
+            if (e.status === 500) {
+                app.resetApp();
+                domManager.throwWarning(e.messages.errorServer)
+                return { success: false };
+            }
+        }
   }
 }
 
+const app = new App();
 const api = new Api();
+const domManager = new DOMManager();
 const progressBar = new ProgressBar();
 
 var callback = () => {
     const btnNewSearch = document.getElementById('btn-search');
     const btnSearched = $('.domain-searched-btn');
-    const app = new App();
 
     if (btnNewSearch) {
       btnNewSearch.onclick = async () => {
@@ -212,11 +281,11 @@ var callback = () => {
           app.startSearch();       
         }
 
-      if ($(btnSearched)) {
-          $(btnSearched).on('click', (event) => {
-              app.startSearch($(event.target).attr('data-domain'));
-          })    
-      }
+    if ($(btnSearched)) {
+        $(btnSearched).on('click', (event) => {
+            app.startSearch($(event.target).attr('data-domain'));
+        })    
+    }
   }
 }
 
