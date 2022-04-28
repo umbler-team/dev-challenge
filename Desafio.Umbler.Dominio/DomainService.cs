@@ -67,6 +67,8 @@ namespace Desafio.Umbler.Dominio
                 domain.HostedAt = hostResponse.OrganizationName;
             }
 
+            //await _domainRepository.AddAsync();
+
             return domain;
         }
     }
