@@ -1,4 +1,5 @@
-﻿using Desafio.Umbler.Dominio.Entities;
+﻿using Desafio.Umbler.Dominio.Dto;
+using Desafio.Umbler.Dominio.Entities;
 using DnsClient;
 using System.Text.RegularExpressions;
 using Whois.NET;
@@ -16,13 +17,16 @@ namespace Desafio.Umbler.Dominio
             _lookupClient = lookupClient;
         }
 
-        public async Task<Domain> Get(string domainName)
+        public async Task<DomainDto> Get(string domainName)
         {
             var pattern = @"^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+";
+
             if(!Regex.IsMatch(domainName, pattern))
             {
                 throw new Exception("Domínio inválido");
             }
+
+            var content = new DomainDto();
 
             var domain = await _domainRepository.GetByNameAsync(domainName);
 
@@ -61,15 +65,20 @@ namespace Desafio.Umbler.Dominio
 
                 var hostResponse = await WhoisClient.QueryAsync(ip);
 
-                domain.Name = domainName;
-                domain.Ip = ip;
-                domain.UpdatedAt = DateTime.Now;
-                domain.WhoIs = response.Raw;
-                domain.Ttl = record?.TimeToLive ?? 0;
-                domain.HostedAt = hostResponse.OrganizationName;
+                content.Name = domainName;
+                content.Ip = ip;
+                content.WhoIs = response.Raw;
+                content.HostedAt = hostResponse?.OrganizationName;
+            } 
+            else
+            {
+                content.Name = domain.Name;
+                content.Ip = domain.Ip;
+                content.WhoIs = domain.WhoIs;
+                content.HostedAt = domain.HostedAt;
             }
 
-            return domain;
+            return content;
         }
     }
 }

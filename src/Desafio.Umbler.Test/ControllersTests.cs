@@ -1,6 +1,7 @@
 using Desafio.Umbler.Api.Controllers;
 using Desafio.Umbler.Api.Views;
 using Desafio.Umbler.Dominio;
+using Desafio.Umbler.Dominio.Dto;
 using Desafio.Umbler.Dominio.Entities;
 using Desafio.Umbler.Repositorio.Models;
 using DnsClient;
@@ -69,7 +70,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(domain));
+            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new DomainDto { Ip = "192.168.0.1", Name = "test.com", HostedAt = "umbler.corp", WhoIs = "Ns.umbler.com" }));
 
             var controller = new DomainController(domainServiceMock.Object);
 
@@ -92,7 +93,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
+            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new DomainDto()));
 
             var controller = new DomainController(domainServiceMock.Object);
 
@@ -120,7 +121,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
+            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new DomainDto()));
 
             var controller = new DomainController(domainServiceMock.Object);
             //inject lookupClient in controller constructor
