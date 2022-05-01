@@ -71,7 +71,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(domain));
+            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new DomainDto { Ip = domain.Ip, Name = domain.Name, HostedAt = domain.HostedAt, WhoIs = domain.WhoIs }));
 
             var controller = new DomainController(domainServiceMock.Object);
 
@@ -94,7 +94,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
+            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new DomainDto()));
 
             var controller = new DomainController(domainServiceMock.Object);
 
@@ -122,7 +122,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
+            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new DomainDto()));
 
             var controller = new DomainController(domainServiceMock.Object);
             //inject lookupClient in controller constructor
