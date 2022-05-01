@@ -1,9 +1,9 @@
-﻿using Desafio.Umbler.Dominio.Entities;
+﻿using Desafio.Umbler.Dominio.Dto;
 
 namespace Desafio.Umbler.Dominio
 {
     public interface IDomainService
     {
-        Task<Domain> Get(string domainName);
+        Task<DomainDto> Get(string domainName);
     }
 }
