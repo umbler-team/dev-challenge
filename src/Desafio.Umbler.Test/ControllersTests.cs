@@ -2,6 +2,7 @@ using Desafio.Umbler.Api.Controllers;
 using Desafio.Umbler.Api.Views;
 using Desafio.Umbler.Dominio;
 using Desafio.Umbler.Dominio.Entities;
+using Desafio.Umbler.Repositorio;
 using Desafio.Umbler.Repositorio.Models;
 using DnsClient;
 using Microsoft.AspNetCore.Http;
@@ -69,7 +70,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(domain));
+            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(domain));
 
             var controller = new DomainController(domainServiceMock.Object);
 
@@ -92,7 +93,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
+            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
 
             var controller = new DomainController(domainServiceMock.Object);
 
@@ -120,7 +121,7 @@ namespace Desafio.Umbler.Test
 
             // Use a clean instance of the context to run the test
             var domainServiceMock = new Mock<IDomainService>();
-            domainServiceMock.Setup(x => x.Get(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
+            domainServiceMock.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain()));
 
             var controller = new DomainController(domainServiceMock.Object);
             //inject lookupClient in controller constructor
@@ -138,28 +139,32 @@ namespace Desafio.Umbler.Test
         //{
         //    //arrange
         //    //whois is a static class, we need to create a class to "wrapper" in a mockable version of WhoisClient
-        //    var whoisClient = new Mock<IWhoisClient>();
+        //    //var whoisClient = new Mock<IWhoisClient>();
         //    var domainName = "test.com";
 
-        //    whoisClient.Setup(l => l.QueryAsync(domainName)).Return();
+        //    //whoisClient.Setup(l => l.QueryAsync(domainName)).Returns(Task.FromResult(new WhoisResponse()));
 
         //    //arrange 
         //    var options = new DbContextOptionsBuilder<DatabaseContext>()
         //        .UseInMemoryDatabase(databaseName: "Find_searches_url")
         //        .Options;
 
-        //    // Use a clean instance of the context to run the test
-        //    using (var db = new DatabaseContext(options))
-        //    {
-        //        //inject IWhoisClient in controller's constructor
-        //        var controller = new DomainController(db/*,IWhoisClient, ILookupClient*/);
+        //    var db = new DatabaseContext(options);
 
-        //        //act
-        //        var response = controller.Get("test.com");
-        //        var result = response.Result as OkObjectResult;
-        //        var obj = result.Value as Domain;
-        //        Assert.IsNotNull(obj);
-        //    }
+        //    var DomainService = new DomainService(new DomainRepository(db), new LookupClient());
+
+        //    // Use a clean instance of the context to run the test
+        //    //using (var db = new DatabaseContext(options))
+        //    //{
+        //    //inject IWhoisClient in controller's constructor
+        //    var controller = new DomainController(DomainService/*db,IWhoisClient, ILookupClient*/);
+
+        //    //act
+        //    var response = controller.Get("test.com");
+        //    var result = response.Result as OkObjectResult;
+        //    var obj = result.Value as Domain;
+        //    Assert.IsNotNull(obj);
+        //    //}
         //}
     }
 }

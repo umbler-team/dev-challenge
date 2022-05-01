@@ -1,6 +1,7 @@
 ﻿using Desafio.Umbler.Dominio;
-using Microsoft.AspNetCore.Cors;
+using DnsClient;
 using Microsoft.AspNetCore.Mvc;
+using Whois.NET;
 
 namespace Desafio.Umbler.Api.Controllers
 {
@@ -14,13 +15,12 @@ namespace Desafio.Umbler.Api.Controllers
             _domainService = domainService;
         }
 
-        [EnableCors("AnotherPolicy")]
         [HttpGet, Route("domain/{domainName}")]
         public async Task<IActionResult> Get(string domainName)
         {
             try
             {
-                var domain = await _domainService.Get(domainName);
+                var domain = await _domainService.GetAsync(domainName);
 
                 return Ok(domain);
             } 

@@ -16,59 +16,56 @@ namespace Desafio.Umbler.Dominio
             _lookupClient = lookupClient;
         }
 
-        public async Task<Domain> Get(string domainName)
+        public async Task<Domain> GetAsync(string domainName)
         {
-            var pattern = @"^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+";
-            if(!Regex.IsMatch(domainName, pattern))
-            {
-                throw new Exception("Domínio inválido");
-            }
+            ValidarDominio(domainName);
 
             var domain = await _domainRepository.GetByNameAsync(domainName);
 
-            if (domain == null)
+            if (domain == null || DeveAtualizarDominio(domain))
             {
-                var response = await WhoisClient.QueryAsync(domainName);
-
-                var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
-
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                domain = new Domain
-                {
-                    Name = domainName,
-                    Ip = ip,
-                    UpdatedAt = DateTime.Now,
-                    WhoIs = response.Raw,
-                    Ttl = record?.TimeToLive ?? 0,
-                    HostedAt = hostResponse.OrganizationName
-                };
-
-                await _domainRepository.AddAsync(domain);
+                domain = await BuscarDominio(domainName);
+                await _domainRepository.AddOrUpdateAsync(domain);
             }
 
-            if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
+            return domain;
+        }
+
+        private static void ValidarDominio(string domainName)
+        {
+            var pattern = @"^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+";
+            if (!Regex.IsMatch(domainName, pattern))
             {
-                var response = await WhoisClient.QueryAsync(domainName);
-
-                var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
-
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                domain.Name = domainName;
-                domain.Ip = ip;
-                domain.UpdatedAt = DateTime.Now;
-                domain.WhoIs = response.Raw;
-                domain.Ttl = record?.TimeToLive ?? 0;
-                domain.HostedAt = hostResponse.OrganizationName;
+                throw new ArgumentException("Domínio inválido");
             }
+        }
 
+        private static bool DeveAtualizarDominio(Domain domain)
+        {
+            return DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl;
+        }
+
+        private async Task<Domain> BuscarDominio(string domainName)
+        {
+            var response = await WhoisClient.QueryAsync(domainName);
+
+            var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
+            var record = result.Answers.ARecords().FirstOrDefault();
+            var address = record?.Address;
+            var ip = address?.ToString();
+
+            var hostResponse = await WhoisClient.QueryAsync(ip);
+
+            var domain = new Domain
+            {
+                Name = domainName,
+                Ip = ip,
+                UpdatedAt = DateTime.Now,
+                WhoIs = response.Raw,
+                Ttl = record?.TimeToLive ?? 0,
+                HostedAt = hostResponse.OrganizationName
+            };
+            
             return domain;
         }
     }
