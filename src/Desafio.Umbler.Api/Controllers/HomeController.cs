@@ -2,7 +2,7 @@
 using Desafio.Umbler.Api.Views;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Desafio.Umbler.Controllers
+namespace Desafio.Umbler.Api.Controllers
 {
     public class HomeController : Controller
     {

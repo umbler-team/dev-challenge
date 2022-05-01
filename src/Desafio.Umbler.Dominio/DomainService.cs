@@ -1,36 +1,29 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Whois.NET;
-using Microsoft.EntityFrameworkCore;
+﻿using Desafio.Umbler.Dominio.Entities;
 using DnsClient;
-using Desafio.Umbler.Dominio.Entities;
-using Desafio.Umbler.Repositorio.Models;
+using Whois.NET;
 
-namespace Desafio.Umbler.Controllers
+namespace Desafio.Umbler.Dominio
 {
-    [Route("api")]
-    public class DomainController : Controller
+    public class DomainService : IDomainService
     {
-        private readonly DatabaseContext _db;
+        private readonly IDomainRepository _domainRepository;
+        private readonly ILookupClient _lookupClient;
 
-        public DomainController(DatabaseContext db)
+        public DomainService(IDomainRepository domainRepository, ILookupClient lookupClient)
         {
-            _db = db;
+            _domainRepository = domainRepository;
+            _lookupClient = lookupClient;
         }
 
-        [HttpGet, Route("domain/{domainName}")]
-        public async Task<IActionResult> Get(string domainName)
+        public async Task<Domain> Get(string domainName)
         {
-            var domain = await _db.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
+            var domain = await _domainRepository.GetByNameAsync(domainName);
 
             if (domain == null)
             {
                 var response = await WhoisClient.QueryAsync(domainName);
 
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
+                var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
                 var record = result.Answers.ARecords().FirstOrDefault();
                 var address = record?.Address;
                 var ip = address?.ToString();
@@ -40,22 +33,21 @@ namespace Desafio.Umbler.Controllers
                 domain = new Domain
                 {
                     Name = domainName,
-                    Ip = ip,
+                    Ip = ip ?? " ",
                     UpdatedAt = DateTime.Now,
                     WhoIs = response.Raw,
                     Ttl = record?.TimeToLive ?? 0,
-                    HostedAt = hostResponse.OrganizationName
+                    HostedAt = hostResponse.OrganizationName ?? " "
                 };
 
-                _db.Domains.Add(domain);
+                await _domainRepository.AddAsync(domain);
             }
 
             if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
             {
                 var response = await WhoisClient.QueryAsync(domainName);
 
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
+                var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
                 var record = result.Answers.ARecords().FirstOrDefault();
                 var address = record?.Address;
                 var ip = address?.ToString();
@@ -63,16 +55,14 @@ namespace Desafio.Umbler.Controllers
                 var hostResponse = await WhoisClient.QueryAsync(ip);
 
                 domain.Name = domainName;
-                domain.Ip = ip;
+                domain.Ip = ip ?? " ";
                 domain.UpdatedAt = DateTime.Now;
                 domain.WhoIs = response.Raw;
                 domain.Ttl = record?.TimeToLive ?? 0;
-                domain.HostedAt = hostResponse.OrganizationName;
+                domain.HostedAt = hostResponse.OrganizationName ?? " ";
             }
 
-            await _db.SaveChangesAsync();
-
-            return Ok(domain);
+            return domain;
         }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
-namespace Desafio.Umbler.Migrations
+namespace Desafio.Umbler.Repositorio.Migrations
 {
     public partial class initial : Migration
     {
