@@ -1,6 +1,7 @@
 using Desafio.Umbler.Api.Controllers;
 using Desafio.Umbler.Api.Views;
 using Desafio.Umbler.Dominio;
+using Desafio.Umbler.Dominio.Dto;
 using Desafio.Umbler.Dominio.Entities;
 using Desafio.Umbler.Repositorio;
 using Desafio.Umbler.Repositorio.Models;

@@ -1,4 +1,5 @@
-﻿using Desafio.Umbler.Dominio.Entities;
+﻿using Desafio.Umbler.Dominio.Dto;
+using Desafio.Umbler.Dominio.Entities;
 using DnsClient;
 using System.Text.RegularExpressions;
 using Whois.NET;
@@ -16,7 +17,7 @@ namespace Desafio.Umbler.Dominio
             _lookupClient = lookupClient;
         }
 
-        public async Task<Domain> GetAsync(string domainName)
+        public async Task<DomainDto> GetAsync(string domainName)
         {
             ValidarDominio(domainName);
 
@@ -28,13 +29,21 @@ namespace Desafio.Umbler.Dominio
                 await _domainRepository.AddOrUpdateAsync(domain);
             }
 
-            return domain;
+            var content = new DomainDto
+            {
+                Name = domain.Name,
+                Ip = domain.Ip,
+                WhoIs = domain.WhoIs,
+                HostedAt = domain.HostedAt
+            };
+
+            return content;
         }
 
         private static void ValidarDominio(string domainName)
         {
             var pattern = @"^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+";
-            if (!Regex.IsMatch(domainName, pattern))
+            if(!Regex.IsMatch(domainName, pattern))
             {
                 throw new ArgumentException("Domínio inválido");
             }
