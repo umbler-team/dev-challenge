@@ -15,7 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Desafio.Umbler\Desafio.Umbler.csproj" />
+    <ProjectReference Include="..\..\Desafio.Umbler.Api\Desafio.Umbler.Api.csproj" />
+    <ProjectReference Include="..\Desafio.Umbler.Api\Desafio.Umbler.Api.csproj" />
   </ItemGroup>
 
 </Project>

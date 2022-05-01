@@ -1,0 +1,21 @@
+.home{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.searchHome{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}
+
+.searchButton {
+    margin: 1rem;
+}
+
+.whoIsColumn {
+    flex-wrap: nowrap;
+}

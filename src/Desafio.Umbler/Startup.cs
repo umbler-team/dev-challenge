@@ -1,5 +1,5 @@
 ﻿using System;
-using Desafio.Umbler.Models;
+using Desafio.Umbler.Repositorio.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
