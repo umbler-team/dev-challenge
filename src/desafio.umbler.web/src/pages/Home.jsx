@@ -12,9 +12,9 @@ import axios from 'axios';
 import styles from '../styles/Home.module.scss';
 
 function Home() {
-    const [dominio, setDominio] = useState();
-    const [row, setRow] = useState();
+    const [dominio, setDominio] = useState("");
     const [rows, setRows] = useState();
+    const validaDominio = /^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+/gm;
 
     function renderRow () {
         if(rows) {
@@ -24,11 +24,9 @@ function Home() {
                             key={element?.name}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            <TableCell component="th" scope="row" align="center">
-                                {element?.ip}
-                            </TableCell>
+                            <TableCell align="center">{element?.ip}</TableCell>
                             <TableCell align="center">{element?.name}</TableCell>
-                            <TableCell align="right">{element?.hostedAt}</TableCell> 
+                            <TableCell align="center">{element?.hostedAt}</TableCell> 
                         </TableRow> 
                     )
                 }
@@ -51,17 +49,21 @@ function Home() {
                 <Button
                     className={styles.searchButton}
                     variant="contained"
-                    onClick={() => {
-                        axios.get(`${process.env.REACT_APP_URL_API}api/domain/${dominio}`)
-                            .then(res => {
-                                const data = res.data;
-                                setRows([{
-                                    hostedAt: data.hostedAt,
-                                    ip: data.ip,
-                                    name: data.name,
-                                    whoIs: data.whoIs
-                                }])
-                            })
+                    onClick={e => {
+                        if(validaDominio.test(dominio)) {
+                            axios.get(`${process.env.REACT_APP_URL_API}api/domain/${dominio}`)
+                                .then(res => {
+                                    const data = res.data;
+                                    setRows([{
+                                        hostedAt: data.hostedAt,
+                                        ip: data.ip,
+                                        name: data.name,
+                                        whoIs: data.whoIs
+                                    }])
+                                })
+                        } else {
+                            alert("Dominio invalido!");
+                        }
                     }}
                 >
                     Pesquisar
@@ -72,8 +74,8 @@ function Home() {
                     <TableHead>
                         <TableRow>
                             <TableCell align="center">Ip</TableCell>
-                            <TableCell align="center">Name</TableCell>
-                            <TableCell align="center">Hosted at</TableCell>
+                            <TableCell align="center">Nome</TableCell>
+                            <TableCell align="center">Hospedado em</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
