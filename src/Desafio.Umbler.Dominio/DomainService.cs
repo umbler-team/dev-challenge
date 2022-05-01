@@ -17,68 +17,65 @@ namespace Desafio.Umbler.Dominio
             _lookupClient = lookupClient;
         }
 
-        public async Task<DomainDto> Get(string domainName)
+        public async Task<DomainDto> GetAsync(string domainName)
         {
-            var pattern = @"^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+";
-
-            if(!Regex.IsMatch(domainName, pattern))
-            {
-                throw new Exception("Domínio inválido");
-            }
-
-            var content = new DomainDto();
+            ValidarDominio(domainName);
 
             var domain = await _domainRepository.GetByNameAsync(domainName);
 
-            if (domain == null)
+            if (domain == null || DeveAtualizarDominio(domain))
             {
-                var response = await WhoisClient.QueryAsync(domainName);
-
-                var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
-
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                domain = new Domain
-                {
-                    Name = domainName,
-                    Ip = ip,
-                    UpdatedAt = DateTime.Now,
-                    WhoIs = response.Raw,
-                    Ttl = record?.TimeToLive ?? 0,
-                    HostedAt = hostResponse.OrganizationName
-                };
-
-                await _domainRepository.AddAsync(domain);
+                domain = await BuscarDominio(domainName);
+                await _domainRepository.AddOrUpdateAsync(domain);
             }
 
-            if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
+            var content = new DomainDto
             {
-                var response = await WhoisClient.QueryAsync(domainName);
-
-                var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
-
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                content.Name = domainName;
-                content.Ip = ip;
-                content.WhoIs = response.Raw;
-                content.HostedAt = hostResponse?.OrganizationName;
-            } 
-            else
-            {
-                content.Name = domain.Name;
-                content.Ip = domain.Ip;
-                content.WhoIs = domain.WhoIs;
-                content.HostedAt = domain.HostedAt;
-            }
+                Name = domain.Name,
+                Ip = domain.Ip,
+                WhoIs = domain.WhoIs,
+                HostedAt = domain.HostedAt
+            };
 
             return content;
+        }
+
+        private static void ValidarDominio(string domainName)
+        {
+            var pattern = @"^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+";
+            if(!Regex.IsMatch(domainName, pattern))
+            {
+                throw new ArgumentException("Domínio inválido");
+            }
+        }
+
+        private static bool DeveAtualizarDominio(Domain domain)
+        {
+            return DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl;
+        }
+
+        private async Task<Domain> BuscarDominio(string domainName)
+        {
+            var response = await WhoisClient.QueryAsync(domainName);
+
+            var result = await _lookupClient.QueryAsync(domainName, QueryType.ANY);
+            var record = result.Answers.ARecords().FirstOrDefault();
+            var address = record?.Address;
+            var ip = address?.ToString();
+
+            var hostResponse = await WhoisClient.QueryAsync(ip);
+
+            var domain = new Domain
+            {
+                Name = domainName,
+                Ip = ip,
+                UpdatedAt = DateTime.Now,
+                WhoIs = response.Raw,
+                Ttl = record?.TimeToLive ?? 0,
+                HostedAt = hostResponse.OrganizationName
+            };
+            
+            return domain;
         }
     }
 }

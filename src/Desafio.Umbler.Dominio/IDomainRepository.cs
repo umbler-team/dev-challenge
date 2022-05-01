@@ -6,6 +6,6 @@ namespace Desafio.Umbler.Dominio
     {
         Task<Domain> GetByNameAsync(string domainName);
 
-        Task AddAsync(Domain domain);
+        Task AddOrUpdateAsync(Domain domain);
     }
 }

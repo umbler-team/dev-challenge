@@ -10,6 +10,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import styles from '../styles/Home.module.scss';
+import { Box } from '@mui/system';
+import { Stack } from '@mui/material';
 
 function Home() {
     const [dominio, setDominio] = useState("");
@@ -36,7 +38,7 @@ function Home() {
 
     return (
         <div className={styles.home}>
-            <div className={styles.searchHome}>
+            <Stack spacing={2} direction="row">
                 <TextField 
                     id="outlined-basic"
                     label="Domínio"
@@ -46,8 +48,8 @@ function Home() {
                         setDominio(e.target.value);
                     }}
                 />
+                
                 <Button
-                    className={styles.searchButton}
                     variant="contained"
                     onClick={e => {
                         if(validaDominio.test(dominio)) {
@@ -68,7 +70,7 @@ function Home() {
                 >
                     Pesquisar
                 </Button>
-            </div>
+            </Stack>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: '50vw' }} size="small" aria-label="a dense table">
                     <TableHead>

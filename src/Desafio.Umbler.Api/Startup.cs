@@ -47,9 +47,9 @@ namespace Desafio.Umbler.Api
                 options.AddPolicy("AnotherPolicy",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
+                        policy.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
                     });
             });
 
@@ -70,7 +70,7 @@ namespace Desafio.Umbler.Api
 
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors();
+            app.UseCors("AnotherPolicy");
 
             app.UseEndpoints(endpoints =>
             {

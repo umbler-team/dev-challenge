@@ -4,6 +4,6 @@ namespace Desafio.Umbler.Dominio
 {
     public interface IDomainService
     {
-        Task<DomainDto> Get(string domainName);
+        Task<DomainDto> GetAsync(string domainName);
     }
 }

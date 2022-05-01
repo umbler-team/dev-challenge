@@ -14,9 +14,19 @@ namespace Desafio.Umbler.Repositorio
             _db = db;
         }
 
-        public async Task AddAsync(Domain domain)
+        public async Task AddOrUpdateAsync(Domain domain)
         {
-            await _db.Domains.AddAsync(domain); 
+            var domainExist = await GetByNameAsync(domain.Name);
+
+            if (domainExist != null)
+            {
+                _db.Domains.Update(domainExist);
+            }
+            else
+            {
+                await _db.Domains.AddAsync(domain); 
+            }
+
             await _db.SaveChangesAsync();
         }
 
