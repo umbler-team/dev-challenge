@@ -10,36 +10,62 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import styles from '../styles/Home.module.scss';
-import { Box } from '@mui/system';
-import { Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 
 function Home() {
     const [dominio, setDominio] = useState("");
     const [rows, setRows] = useState();
     const validaDominio = /^[a-zA-Z0-9-_]+[.\\]+[a-zA-Z0-9-_]+/gm;
 
-    function renderRow () {
-        if(rows) {
-            return rows.map( element =>{
-                    return (
-                        <TableRow
-                            key={element?.name}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell align="center">{element?.ip}</TableCell>
-                            <TableCell align="center">{element?.name}</TableCell>
-                            <TableCell align="center">{element?.hostedAt}</TableCell> 
-                        </TableRow> 
-                    )
-                }
+    function renderRow() {
+        if (rows) {
+            return (
+                <TableRow
+                    key={rows?.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                    <TableCell align="center">{rows?.ip}</TableCell>
+                    <TableCell align="center">{rows?.name}</TableCell>
+                    <TableCell align="center">{rows?.hostedAt}</TableCell>
+                </TableRow>
             )
         }
     }
 
+    function renderWhoIs() {
+        if (rows) {
+            return rows.whoIs.split("\n").map((element, index) => {
+                return (
+                    <p>{element}</p>
+                )
+            })
+        }
+    }
+
     return (
-        <div className={styles.home}>
-            <Stack spacing={2} direction="row">
-                <TextField 
+        <Box
+            sx={{
+                display:"flex",
+                alignItems:"center", 
+                justifyContent:"center",
+                minHeight:"100vh",
+                paddingLeft:"1vw",
+                paddingRight:"1vw",
+                paddingTop:"1vh",
+                paddingBottom:"1vh",
+                flexDirection:"column"
+            }}
+        >
+            <Stack
+                spacing={2}
+                direction="row"
+                alignItems="center"
+                height="10vh"
+            >
+                <TextField
+                    sx={{
+                        width:"60%"
+                    }}
                     id="outlined-basic"
                     label="Domínio"
                     variant="outlined"
@@ -48,20 +74,23 @@ function Home() {
                         setDominio(e.target.value);
                     }}
                 />
-                
                 <Button
+                    sx={{
+                        maxHeight: 35,
+                        width:"40%"
+                    }}
                     variant="contained"
                     onClick={e => {
-                        if(validaDominio.test(dominio)) {
+                        if (validaDominio.test(dominio)) {
                             axios.get(`${process.env.REACT_APP_URL_API}api/domain/${dominio}`)
                                 .then(res => {
                                     const data = res.data;
-                                    setRows([{
+                                    setRows({
                                         hostedAt: data.hostedAt,
                                         ip: data.ip,
                                         name: data.name,
                                         whoIs: data.whoIs
-                                    }])
+                                    })
                                 })
                         } else {
                             alert("Dominio invalido!");
@@ -71,9 +100,9 @@ function Home() {
                     Pesquisar
                 </Button>
             </Stack>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: '50vw' }} size="small" aria-label="a dense table">
-                    <TableHead>
+            <TableContainer component={Paper} sx={{ minWidth: "50vw", height: "66.5" }}>
+                <Table size="small">
+                    <TableHead >
                         <TableRow>
                             <TableCell align="center">Ip</TableCell>
                             <TableCell align="center">Nome</TableCell>
@@ -85,7 +114,14 @@ function Home() {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+            <Box
+                sx={{
+                    flex: 1
+                }}
+            >
+                {renderWhoIs()}
+            </Box>
+        </Box>
     )
 }
 
