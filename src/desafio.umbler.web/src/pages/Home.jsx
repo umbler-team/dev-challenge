@@ -92,6 +92,9 @@ function Home() {
                                         whoIs: data.whoIs
                                     })
                                 })
+                                .catch(res => {
+                                    alert(res.response.data);
+                                })
                         } else {
                             alert("Dominio invalido!");
                         }
