@@ -93,4 +93,27 @@ Se você rodar o projeto e testar um domínio, verá que ele já está funcionan
 
 # Modificações:
 
-- DESCREVA AQUI O OBJETIVO DAS MODIFICAÇÕES...
+# Modificações realizadas
+
+ Objetivo das modificações
+
+O principal objetivo das alterações foi corrigir problemas de integração entre frontend e backend, garantindo que a busca de domínios funcionasse corretamente, além de melhorar a organização do código e a testabilidade da aplicação.
+
+ Backend
+
+- Correção da configuração de rotas para permitir o acesso correto aos endpoints da API
+- Ajuste da injeção de dependências para evitar erros de execução
+- Criação e utilização de uma camada de serviço para concentrar a regra de negócio
+- Validação de domínio para evitar erros e respostas inesperadas
+- Implementação de DTO para retornar apenas os dados necessários ao frontend
+
+ Frontend
+
+- Correção da chamada para o endpoint da API
+- Garantia de que a requisição de busca seja realizada corretamente ao clicar em "Pesquisar"
+- Ajustes para exibição correta das informações retornadas
+
+ Testes
+
+- Ajustes nos testes unitários para refletir a nova assinatura dos serviços
+- Criação de testes para validar cenários com domínio existente e inexistente
