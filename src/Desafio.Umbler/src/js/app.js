@@ -8,6 +8,12 @@ class Api {
       body = JSON.stringify(body)
     }
 
+    const domain = input.value.trim();
+
+      if (!domain.includes(".")) {
+      alert("Digite um domínio válido");
+      return;
+}
     const request = new Request('/api/' + url, {
       method: method,
       body: body,
@@ -48,7 +54,11 @@ var callback = () => {
     btn.onclick = async () => {
       const response = await api.getDomain(txt.value)
       if (response) {
-        result.innerHTML = JSON.stringify(response, null, 4)
+        result.innerHTML = `
+          <p><strong>Domínio:</strong> ${response.name}</p>
+          <p><strong>IP:</strong> ${response.ip}</p>
+          <p><strong>Hospedado em:</strong> ${response.hostedAt}</p>
+`
       }
     }
   }
